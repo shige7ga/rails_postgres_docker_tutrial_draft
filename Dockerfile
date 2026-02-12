@@ -9,11 +9,14 @@ RUN apt-get update -qq && \
 # 作業ディレクトリを設定
 WORKDIR /myapp
 
-# bundleディレクトリを作成し、全ユーザーに書き込み権限を付与
-RUN mkdir -p /bundle && chmod 777 /bundle
+# GemfileとGemfile.lockをコピー
+COPY Gemfile* ./
 
-# gemのbinディレクトリをPATHに追加
-ENV PATH="/bundle/bin:${PATH}"
+# Bundlerのインストール
+RUN gem install bundler && bundle install
+
+# アプリケーションのコードをコピー
+COPY . .
 
 # エントリーポイントスクリプトをコピー
 COPY entrypoint.sh /usr/bin/
